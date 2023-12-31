@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 class Point {
   int x;
@@ -21,6 +22,53 @@ class Point {
   String toString() {
     return "Point($x, $y)";
   }
+}
+
+class Point3<T extends num> {  // Constrain T to be a subtype of num
+  final T x;
+  final T y;
+  final T z;
+
+  Point3(this.x, this.y, this.z);
+
+  Point3.clone(Point3<T> point) : this(point.x, point.y, point.z);
+
+  @override
+  String toString() {
+    String formatValue(T value) {
+      return value is double ? value.toStringAsFixed(3) : value.toString();
+    }
+
+    return 'Point3{x: ${formatValue(x)}, y: ${formatValue(y)}, z: ${formatValue(z)}}';
+  }
+
+  Point3<double> normalize() {
+    double magnitude = sqrt(x * x + y * y + z * z);  // Correct casting
+    if (magnitude == 0) {
+      throw Exception("Cannot normalize a zero vector");
+    }
+    return Point3<double>(x / magnitude, y / magnitude, z / magnitude);
+  }
+
+  Point3<T> offset(T xOff, T yOff, T zOff) {
+    return Point3(
+        x + xOff as T,
+        y + yOff as T,
+        z + zOff as T
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is Point3 &&
+              runtimeType == other.runtimeType &&
+              x == other.x &&
+              y == other.y &&
+              z == other.z;
+
+  @override
+  int get hashCode => x.hashCode ^ y.hashCode ^ z.hashCode;
 }
 
 final int maxInt = (double.infinity is int) ? double.infinity as int : ~minInt;

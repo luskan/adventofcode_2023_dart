@@ -19,3 +19,4 @@ dev_dependencies:
   worker_manager: ^4.2.6
   collection: ^1.17.0
   tuple: ^2.0.1
+  vector_math: ^2.1.0
