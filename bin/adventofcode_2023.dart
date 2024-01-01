@@ -3,6 +3,7 @@ import 'package:adventofcode_2023/day.dart';
 import 'package:adventofcode_2023/day01.dart';
 import 'package:adventofcode_2023/day02.dart';
 import 'package:adventofcode_2023/day03.dart';
+import 'package:adventofcode_2023/day04.dart';
 import 'package:adventofcode_2023/day24.dart';
 
 import 'dart:developer';
@@ -15,8 +16,8 @@ void main(List<String> arguments) async {
     Day01(),
     Day02(),
     Day03(),
+    Day04(),
     Day24(),
-
   ];
 
   for (var day in days) {
