@@ -8,38 +8,36 @@ import 'solution_check.dart';
 
 @DayTag()
 class Day06 extends Day with ProblemReader, SolutionCheck {
-  static dynamic readData(var filePath, {var part2 = false}) {
-    return parseData(File(filePath).readAsStringSync(), part2: part2);
+  static List<List<int>> readData(String filePath, {bool part2 = false}) {
+    final fileContent = File(filePath).readAsStringSync();
+    return parseData(fileContent, part2: part2);
   }
 
-  static List<List<int>> parseData(var data, {var part2 = false}) {
-    var res = <List<int>>[];
-    RegExp(r"(Time|Distance):([\d ]+)").allMatches(data).forEach((m) {
-      var entries = <int>[];
-      var nums = m.group(2)!.trim();
-      if (part2)
-        nums = nums.replaceAll(' ', '');
-      for (var d in nums.split(" ")) {
-        if (d.isNotEmpty)
-          entries.add(int.parse(d));
-      }
-      res.add(entries);
-    });
-    return res;
+  static List<List<int>> parseData(String data, {bool part2 = false}) {
+    final result = <List<int>>[];
+    final regex = RegExp(r"(Time|Distance):([\d ]+)");
+    for (final match in regex.allMatches(data)) {
+      final numbers = part2 ?
+        match.group(2)!.replaceAll(' ', '').split(' ')
+        :  match.group(2)!.trim().split(' ');
+      final entries = numbers.where((n) => n.isNotEmpty)
+          .map((n) => int.parse(n))
+          .toList();
+      result.add(entries);
+    }
+    return result;
   }
 
-  int solve(List<List<int>> data, {var part2 = false}) {
-    int total = 1;
+  int solve(List<List<int>> data, {bool part2 = false}) {
+    var total = 1;
     for (var i = 0; i < data[0].length; i++) {
-      var raceTime = data[0][i];
-      var recordDistance = data[1][i];
-
+      final raceTime = data[0][i];
+      final recordDistance = data[1][i];
       var winsCount = 0;
 
-      for (int holdTime = 1; holdTime < raceTime; holdTime++) {
-
-        var timeRemaining = raceTime - holdTime;
-        var distance = holdTime * timeRemaining;
+      for (var holdTime = 1; holdTime < raceTime; holdTime++) {
+        final timeRemaining = raceTime - holdTime;
+        final distance = holdTime * timeRemaining;
 
         if (distance > recordDistance) {
           winsCount++;
@@ -47,7 +45,6 @@ class Day06 extends Day with ProblemReader, SolutionCheck {
       }
 
       total *= winsCount;
-
     }
     return total;
   }
