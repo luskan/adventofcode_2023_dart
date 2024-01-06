@@ -74,11 +74,28 @@ class Point3<T extends num> {  // Constrain T to be a subtype of num
 final int maxInt = (double.infinity is int) ? double.infinity as int : ~minInt;
 final int minInt = (double.infinity is int) ? -double.infinity as int : (-1 << 63);
 
+// [start, end)
 class IntRange {
   final int start;
   final int end;
 
-  IntRange(this.start, this.end);
+  // Static instance for an invalid range
+  static const IntRange invalid = IntRange._invalid();
+
+  int length() => end - start;
+
+  bool isEmpty() => start == end;
+
+  bool isNotEmpty() => !isEmpty();
+
+  IntRange(this.start, this.end) {
+    if (start >= end) {
+      throw ArgumentError('Invalid range: start ($start) should not be greater than end ($end)');
+    }
+  }
+
+  // Private constructor for the invalid range
+  const IntRange._invalid() : start = 0, end = 0;
 
   bool overlaps(IntRange other) {
     return !(end < other.start || start > other.end);
@@ -94,10 +111,10 @@ class IntRange {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IntRange &&
-          runtimeType == other.runtimeType &&
-          start == other.start &&
-          end == other.end;
+          other is IntRange &&
+              runtimeType == other.runtimeType &&
+              start == other.start &&
+              end == other.end;
 
   @override
   int get hashCode => start.hashCode ^ end.hashCode;
@@ -109,6 +126,16 @@ class IntRange {
 IntRange union(IntRange r1, IntRange r2) {
   int start = r1.start < r2.start ? r1.start : r2.start;
   int end = r1.end > r2.end ? r1.end : r2.end;
+  return IntRange(start, end);
+}
+
+IntRange intersect(IntRange r1, IntRange r2) {
+  int start = r1.start > r2.start ? r1.start : r2.start;
+  int end = r1.end < r2.end ? r1.end : r2.end;
+  if (start >= end) {
+    // No intersection, returning an empty range
+    return IntRange.invalid;
+  }
   return IntRange(start, end);
 }
 

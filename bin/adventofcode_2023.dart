@@ -4,6 +4,16 @@ import 'package:adventofcode_2023/day01.dart';
 import 'package:adventofcode_2023/day02.dart';
 import 'package:adventofcode_2023/day03.dart';
 import 'package:adventofcode_2023/day04.dart';
+import 'package:adventofcode_2023/day05.dart';
+import 'package:adventofcode_2023/day06.dart';
+import 'package:adventofcode_2023/day07.dart';
+import 'package:adventofcode_2023/day08.dart';
+import 'package:adventofcode_2023/day09.dart';
+import 'package:adventofcode_2023/day10.dart';
+import 'package:adventofcode_2023/day11.dart';
+import 'package:adventofcode_2023/day12.dart';
+import 'package:adventofcode_2023/day13.dart';
+import 'package:adventofcode_2023/day14.dart';
 import 'package:adventofcode_2023/day24.dart';
 
 import 'dart:developer';
@@ -17,6 +27,16 @@ void main(List<String> arguments) async {
     Day02(),
     Day03(),
     Day04(),
+    Day05(),
+    //Day06(),
+    //Day07(),
+    //Day08(),
+    //Day09(),
+    //Day10(),
+    //Day11(),
+    //Day12(),
+    //Day13(),
+    //Day14(),
     Day24(),
   ];
 
