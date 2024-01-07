@@ -218,3 +218,20 @@ String getStringFromFile(String s, int start, {int end = -1}) {
   }
   return res;
 }
+
+int gcd(int a, int b) {
+  if (b == 0) {
+    return a;
+  }
+  return gcd(b, a % b);
+}
+
+int gcdOfList(List<int> numbers) {
+  return numbers.reduce((a, b) => gcd(a, b));
+}
+
+int lcmOfList(List<int> numbers) {
+  var gcd = gcdOfList(numbers);
+  return numbers.reduce((a, b) => a * (b ~/ gcd));
+}
+
