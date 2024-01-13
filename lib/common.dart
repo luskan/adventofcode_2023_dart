@@ -2,7 +2,26 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-class Point {
+abstract class IPoint<T> {
+  T get x;
+  T get y;
+}
+
+class ImmutablePoint implements IPoint<int> {
+  final int x;
+  final int y;
+
+  const ImmutablePoint(this.x, this.y);
+
+  operator +(ImmutablePoint other) {
+    return ImmutablePoint(x + other.x, y + other.y);
+  }
+
+  @override
+  String toString() => "ImmutablePoint($x, $y)";
+}
+
+class Point implements IPoint<int> {
   int x;
   int y;
 
@@ -10,9 +29,22 @@ class Point {
 
   Point.clone(Point point): this(point.x, point.y);
 
+  // Factory constructor to create a Point from an IPoint<int>
+  factory Point.fromIPoint(IPoint<int> other) {
+    return Point(other.x, other.y);
+  }
+
   @override
   bool operator ==(dynamic other) {
     return x == other.x && y == other.y;
+  }
+
+  Point operator +(IPoint<int> other) {
+    return Point(x + other.x, y + other.y);
+  }
+
+  Point operator -(IPoint<int> other) {
+    return Point(x - other.x, y - other.y);
   }
 
   @override
