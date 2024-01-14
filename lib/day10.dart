@@ -337,6 +337,9 @@ class Day10 extends Day with ProblemReader, SolutionCheck {
           loopBackItem = loopBackItem.prevItem!;
         }
 
+        //
+        // Update start position with the correct pipe type
+
         PipeType startPosPipeType = data[item.pt.y][item.pt.x].type;
         Point prevDir = item.pt - item.ptPrev;
         Point nextDir = firstAfterStart - item.pt;
@@ -388,6 +391,10 @@ class Day10 extends Day with ProblemReader, SolutionCheck {
     return total;
   }
 
+  /**
+   * Uses Point-In-Polygon algorithm, together with flood fill - which is huge optimization. After P-In-P
+   * finds an in or out point, then it flood fills all the neighbours with the same in/out value.
+   */
   int solve2(List<List<MapPlace>> data) {
     int total = 0;
     var stack = <FloodItem>[]; // stack of points to flood fill
