@@ -437,12 +437,30 @@ class Day10 extends Day with ProblemReader, SolutionCheck {
                 } else {
                   loopLineCounter++;
 
-                  String se = PlaceTypeToStr(lastFirstLoopPlace!.type) +
-                      PlaceTypeToStr(curPlace.type);
-                  var inOutEdged = ['J7', 'LF', 'LJ', '7F'];
-                  if (inOutEdged.contains(se) ||
-                      inOutEdged.contains(se.split('').reversed.join('')))
-                    counters[i]++;
+                  // This was tricky for me for some time. Some of the walls are L--7, and should be counted as 1.
+                  // Other are:  F----7, which should be counted as 2. The first one are actually a straight line
+                  // from for example bottom to top, while the other are a corner. So I had to add this check.
+                  const inOutEdged = [
+                    [PipeType.northWest_J, PipeType.southWest_7],
+                    [PipeType.southWest_7, PipeType.northWest_J],
+
+                    [PipeType.northEast_L, PipeType.southEast_F],
+                    [PipeType.southEast_F, PipeType.northEast_L],
+
+                    [PipeType.northEast_L, PipeType.northWest_J],
+                    [PipeType.northWest_J, PipeType.northEast_L],
+
+                    [PipeType.southWest_7, PipeType.southEast_F],
+                    [PipeType.southEast_F, PipeType.southWest_7],
+                  ];
+                  for (var el in inOutEdged) {
+                    if (el[0] == lastFirstLoopPlace!.type &&
+                        el[1] == curPlace.type) {
+                      counters[i]++;
+                      break;
+                    }
+                  }
+
                 }
               }
             } else {
