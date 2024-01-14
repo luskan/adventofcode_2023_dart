@@ -61,7 +61,7 @@ L7JLJL-JLJLJL--JLJ.L
 ..........
 ''';    
 
-    //expect(Day10().solve(Day10.parseData(testData1)), equals(4));
+    expect(Day10().solve(Day10.parseData(testData1)), equals(4));
     expect(Day10().solve(Day10.parseData(testData2), part2: true), equals(4));
     expect(Day10().solve(Day10.parseData(testData4), part2: true), equals(4));
 
