@@ -66,11 +66,14 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
 
     for (int cycle = 0; cycle < numberOfCycles; ++cycle) {
       Direction dir = Direction.values[cycle % 4];
+      int dx = (dir == Direction.East) ? -1 : (dir == Direction.West) ? 1 : 0;
+      int dy = (dir == Direction.South) ? -1 : (dir == Direction.North) ? 1 : 0;
+      pt.x = dir == Direction.East ? data[0].length - 1 : 0;
+      pt.y = (dir == Direction.South) ? data.length - 1 : 0;
       switch(dir) {
         case Direction.North:
         case Direction.South:
-          pt.y = (dir == Direction.South) ? data.length - 1 : 0;
-          for (; pt.y < data.length && pt.y >= 0; pt.y += (dir == Direction.South ? -1 : 1)) {
+          for (; pt.y < data.length && pt.y >= 0; pt.y += dy) {
             for (pt.x = 0; pt.x < data[0].length; ++pt.x) {
               _moveRockToSide(data, dir, pt.x, pt.y);
             }
@@ -78,8 +81,7 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
           break;
         case Direction.West:
         case Direction.East:
-          pt.x = dir == Direction.East ? data[0].length - 1 : 0;
-          for (;pt.x >= 0 && pt.x < data[0].length; pt.x += (dir == Direction.East ? -1 : 1)) {
+          for (;pt.x >= 0 && pt.x < data[0].length; pt.x += dx) {
             for (pt.y = 0; pt.y < data.length; ++pt.y) {
               _moveRockToSide(data, dir, pt.x, pt.y);
             }
