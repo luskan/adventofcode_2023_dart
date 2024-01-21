@@ -41,42 +41,18 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
     }).toList()).toList();
   }
 
-  void _moveRockToSide(MapType data, Direction dir, Point pt) {
-    var item = data[pt.y][pt.x];
-    if (item != MapItemType.Rock)
-      return;
-
-    if (dir == Direction.North || dir == Direction.South) {
-      int off = dir == Direction.North ? -1 : 1;
-      int y_new = pt.y;
-      for (int y = pt.y + off; y >= 0 && y < data.length; y += off) {
-        if (data[y][pt.x] == MapItemType.Ground) {
-          y_new = y;
-        }
-        else {
-          break;
-        }
-      }
-      if (y_new != pt.y) {
-        data[pt.y][pt.x] = MapItemType.Ground;
-        data[y_new][pt.x] = MapItemType.Rock;
-      }
+  void _moveRockToSide(MapType data, Direction dir, int x, int y) {
+    if (data[y][x] != MapItemType.Rock) return;
+    int dy = dir == Direction.North ? -1 : dir == Direction.South ? 1 : 0;
+    int dx = dir == Direction.West ? -1 : dir == Direction.East ? 1 : 0;
+    int newY = y+dy, newX = x + dx;
+    while (newY >= 0 && newY < data.length && newX >= 0 && newX < data[0].length && data[newY][newX] == MapItemType.Ground) {
+      newY += dy;
+      newX += dx;
     }
-    if (dir == Direction.West || dir == Direction.East) {
-      int off = dir == Direction.West ? -1 : 1;
-      int x_new = pt.x;
-      for (int x = pt.x + off; x >= 0 && x < data[0].length; x += off) {
-        if (data[pt.y][x] == MapItemType.Ground) {
-          x_new = x;
-        }
-        else {
-          break;
-        }
-      }
-      if (x_new != pt.x) {
-        data[pt.y][pt.x] = MapItemType.Ground;
-        data[pt.y][x_new] = MapItemType.Rock;
-      }
+    if (newY- dy != y || newX- dx != x) {
+      data[y][x] = MapItemType.Ground;
+      data[newY - dy][newX - dx] = MapItemType.Rock;
     }
   }
 
@@ -92,34 +68,20 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
       Direction dir = Direction.values[cycle % 4];
       switch(dir) {
         case Direction.North:
-          pt.x = 0; pt.y = 0;
-          for (pt.y = 0; pt.y < data.length; ++pt.y) {
+        case Direction.South:
+          pt.y = (dir == Direction.South) ? data.length - 1 : 0;
+          for (; pt.y < data.length && pt.y >= 0; pt.y += (dir == Direction.South ? -1 : 1)) {
             for (pt.x = 0; pt.x < data[0].length; ++pt.x) {
-              _moveRockToSide(data, Direction.North, pt);
+              _moveRockToSide(data, dir, pt.x, pt.y);
             }
           }
           break;
         case Direction.West:
-          pt.x = 0; pt.y = 0;
-          for (; pt.x < data[0].length; ++pt.x) {
-            for (pt.y = 0; pt.y < data.length; ++pt.y) {
-              _moveRockToSide(data, Direction.West, pt);
-            }
-          }
-          break;
-        case Direction.South:
-          pt.x = 0; pt.y = data.length - 1;
-          for (; pt.y >= 0; pt.y--) {
-            for (pt.x = 0; pt.x < data[0].length; pt.x++) {
-              _moveRockToSide(data, Direction.South, pt);
-            }
-          }
-          break;
         case Direction.East:
-          pt.x = data[0].length - 1; pt.y = 0;
-          for (; pt.x >= 0; --pt.x) {
+          pt.x = dir == Direction.East ? data[0].length - 1 : 0;
+          for (;pt.x >= 0 && pt.x < data[0].length; pt.x += (dir == Direction.East ? -1 : 1)) {
             for (pt.y = 0; pt.y < data.length; ++pt.y) {
-              _moveRockToSide(data, Direction.East, pt);
+              _moveRockToSide(data, dir, pt.x, pt.y);
             }
           }
           break;
