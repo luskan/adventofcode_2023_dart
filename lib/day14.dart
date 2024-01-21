@@ -64,8 +64,12 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
     List<int> weights = [];
     FoundCycle foundCycle = FoundCycle(0, 0, 0);
 
-    for (int cycle = 0; cycle < numberOfCycles; ++cycle) {
-      Direction dir = Direction.values[cycle % 4];
+    // Iterate over the number of cycles, but code also checks for repetition so in part2 the actual number of
+    // iterations is at most 200
+    for (int iteration = 0; ; ++iteration) {
+      Direction dir = Direction.values[iteration % 4];
+
+      // Move rocks to current side
       int dx = (dir == Direction.East) ? -1 : (dir == Direction.West) ? 1 : 0;
       int dy = (dir == Direction.South) ? -1 : (dir == Direction.North) ? 1 : 0;
       pt.x = dir == Direction.East ? data[0].length - 1 : 0;
@@ -89,7 +93,10 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
           break;
       }
 
-      if (cycle % 4 == 3 || !part2) {
+      // Every cycle (4 iteration), calculate weight of rocks and store it in a list. Then check for a cycle in list.
+      if (iteration % 4 == 3 || !part2) {
+
+        // Calculate weight
         pt = Point(0, 0);
         var weight = 0;
         for (pt.y = 0; pt.y < data.length; ++pt.y) {
@@ -97,15 +104,19 @@ class Day14 extends Day with ProblemReader, SolutionCheck {
             var item = data[pt.y][pt.x];
             if (item != MapItemType.Rock)
               continue;
-
             weight += (data.length - pt.y);
           }
         }
+
         if (!part2) {
+          // For part1 only weight ater first iteration (move to north) is needed.
           total += weight;
           break;
         }
         else {
+
+          // Part2 requires finding weight after 1'000'000'000 * 4 iterations. So we look for a repetition
+          // in returned weights.
           weights.add(weight);
           if (isCycleFound(weights, foundCycle) && foundCycle.cycleEnd == weights.length-1 && foundCycle.cycleLen > 1) {
             int startOff = weights.length - foundCycle.cycleLen*2;
