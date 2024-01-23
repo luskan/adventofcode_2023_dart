@@ -14,6 +14,8 @@ import 'package:adventofcode_2023/day11.dart';
 import 'package:adventofcode_2023/day12.dart';
 import 'package:adventofcode_2023/day13.dart';
 import 'package:adventofcode_2023/day14.dart';
+import 'package:adventofcode_2023/day15.dart';
+import 'package:adventofcode_2023/day16.dart';
 import 'package:adventofcode_2023/day24.dart';
 
 import 'dart:developer';
@@ -37,6 +39,8 @@ void main(List<String> arguments) async {
     Day12(),
     Day13(),
     Day14(),
+    Day15(),
+    Day16(),
     Day24(),
   ];
 
