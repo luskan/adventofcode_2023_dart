@@ -138,6 +138,15 @@ class IntRange {
     }
   }
 
+  static IntRange invalidIfWrong(var s, var e) {
+    if (s >= e) {
+      return IntRange._invalid();
+    }
+    else {
+      return IntRange(s, e);
+    }
+  }
+
   // Private constructor for the invalid range
   const IntRange._invalid() : start = 0, end = 0;
 
@@ -165,6 +174,10 @@ class IntRange {
 
   @override
   String toString() => '($start, $end)';
+
+  IntRange clone() {
+    return IntRange.invalidIfWrong (start, end);
+  }
 }
 
 IntRange union(IntRange r1, IntRange r2) {
