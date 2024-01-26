@@ -25,13 +25,13 @@ enum PipeType {
   start
 }
 
-const DirUp = ImmutablePoint(0, -1);
-const DirRight = ImmutablePoint(1, 0);
-const DirDown = ImmutablePoint(0, 1);
-const DirLeft = ImmutablePoint(-1, 0);
-const DirError = ImmutablePoint(-1, -1);
+final DirUp = ImmutablePoint(0, -1);
+final DirRight = ImmutablePoint(1, 0);
+final DirDown = ImmutablePoint(0, 1);
+final DirLeft = ImmutablePoint(-1, 0);
+final DirError = ImmutablePoint(-1, -1);
 
-const dirs = <ImmutablePoint>[
+final dirs = <ImmutablePoint>[
   DirRight,
   DirDown,
   DirLeft,
@@ -196,70 +196,70 @@ String PlaceTypeToStr(PipeType type) {
   return typeToStr[type]!;
 }
 
-bool PipesConnectorsMatch(ImmutablePoint dir, PipeType type, PipeType type2) {
-  const connectorsMap = {
-    PipeType.vertical: {
-      DirUp: [PipeType.vertical, PipeType.southEast_F, PipeType.southWest_7],
-      DirDown: [
-        PipeType.vertical,
-        PipeType.northWest_J,
-        PipeType.northEast_L
-      ],
-    },
-    PipeType.horizontal: {
-      DirRight: [
-        PipeType.horizontal,
-        PipeType.southWest_7,
-        PipeType.northWest_J
-      ],
-      DirLeft: [
-        PipeType.horizontal,
-        PipeType.southEast_F,
-        PipeType.northEast_L
-      ],
-    },
-    PipeType.northEast_L: {
-      DirUp: [PipeType.vertical, PipeType.southEast_F, PipeType.southWest_7],
-      DirRight: [
-        PipeType.horizontal,
-        PipeType.northWest_J,
-        PipeType.southWest_7
-      ],
-    },
-    PipeType.northWest_J: {
-      DirLeft: [
-        PipeType.horizontal,
-        PipeType.northEast_L,
-        PipeType.southEast_F
-      ],
-      DirUp: [PipeType.vertical, PipeType.southWest_7, PipeType.southEast_F],
-    },
-    PipeType.southWest_7: {
-      DirLeft: [
-        PipeType.horizontal,
-        PipeType.southEast_F,
-        PipeType.northEast_L
-      ],
-      DirDown: [
-        PipeType.vertical,
-        PipeType.northWest_J,
-        PipeType.northEast_L
-      ],
-    },
-    PipeType.southEast_F: {
-      DirRight: [
-        PipeType.horizontal,
-        PipeType.northWest_J,
-        PipeType.southWest_7
-      ],
-      DirDown: [
-        PipeType.vertical,
-        PipeType.northWest_J,
-        PipeType.northEast_L
-      ],
-    },
-  };
+var connectorsMap = {
+  PipeType.vertical: {
+    DirUp: [PipeType.vertical, PipeType.southEast_F, PipeType.southWest_7],
+    DirDown: [
+      PipeType.vertical,
+      PipeType.northWest_J,
+      PipeType.northEast_L
+    ],
+  },
+  PipeType.horizontal: {
+    DirRight: [
+      PipeType.horizontal,
+      PipeType.southWest_7,
+      PipeType.northWest_J
+    ],
+    DirLeft: [
+      PipeType.horizontal,
+      PipeType.southEast_F,
+      PipeType.northEast_L
+    ],
+  },
+  PipeType.northEast_L: {
+    DirUp: [PipeType.vertical, PipeType.southEast_F, PipeType.southWest_7],
+    DirRight: [
+      PipeType.horizontal,
+      PipeType.northWest_J,
+      PipeType.southWest_7
+    ],
+  },
+  PipeType.northWest_J: {
+    DirLeft: [
+      PipeType.horizontal,
+      PipeType.northEast_L,
+      PipeType.southEast_F
+    ],
+    DirUp: [PipeType.vertical, PipeType.southWest_7, PipeType.southEast_F],
+  },
+  PipeType.southWest_7: {
+    DirLeft: [
+      PipeType.horizontal,
+      PipeType.southEast_F,
+      PipeType.northEast_L
+    ],
+    DirDown: [
+      PipeType.vertical,
+      PipeType.northWest_J,
+      PipeType.northEast_L
+    ],
+  },
+  PipeType.southEast_F: {
+    DirRight: [
+      PipeType.horizontal,
+      PipeType.northWest_J,
+      PipeType.southWest_7
+    ],
+    DirDown: [
+      PipeType.vertical,
+      PipeType.northWest_J,
+      PipeType.northEast_L
+    ],
+  },
+};
 
+bool PipesConnectorsMatch(ImmutablePoint dir, PipeType type, PipeType type2) {
   return connectorsMap[type]?[dir]?.contains(type2) ?? false;
 }
 

@@ -11,11 +11,23 @@ class ImmutablePoint implements IPoint<int> {
   final int x;
   final int y;
 
-  const ImmutablePoint(this.x, this.y);
+  ImmutablePoint(this.x, this.y);
 
   operator +(ImmutablePoint other) {
     return ImmutablePoint(x + other.x, y + other.y);
   }
+
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is IPoint &&
+          runtimeType == other.runtimeType &&
+          x == other.x &&
+          y == other.y;
+
+  @override
+  int get hashCode => x.hashCode ^ y.hashCode;
 
   @override
   String toString() => "ImmutablePoint($x, $y)";

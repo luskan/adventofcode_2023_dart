@@ -17,6 +17,7 @@ import 'package:adventofcode_2023/day14.dart';
 import 'package:adventofcode_2023/day15.dart';
 import 'package:adventofcode_2023/day16.dart';
 import 'package:adventofcode_2023/day17.dart';
+import 'package:adventofcode_2023/day18.dart';
 import 'package:adventofcode_2023/day24.dart';
 
 import 'dart:developer';
@@ -43,14 +44,17 @@ void main(List<String> arguments) async {
     Day15(),
     Day16(),
     Day17(),
+    Day18(),
     Day24(),
   ];
 
+  var swTotal = Stopwatch()..start();
   for (var day in days) {
     var sw = Stopwatch()..start();
     await day.run();
     print('Profile: ${sw.elapsed.toString()}');
   }
+  print('Total: ${swTotal.elapsed.toString()}');
 
   /*
   // Turned off as it does not alow to await for run method
