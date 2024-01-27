@@ -30,7 +30,6 @@ void main(List<String> arguments) async {
   //await Executor().warmUp(log: true);
 
   var days = <Day>[
-    /*
     Day01(),
     Day02(),
     Day03(),
@@ -51,10 +50,8 @@ void main(List<String> arguments) async {
     Day18(),
     Day19(),
     Day20(),
-
-     */
     Day21(),
-    //Day24(),
+    Day24(),
   ];
 
   var swTotal = Stopwatch()..start();
