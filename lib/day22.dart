@@ -10,8 +10,8 @@ class Brick {
   ImmutablePoint3 pt1;
   ImmutablePoint3 pt2;
 
-  ImmutablePoint3 pt1Org = ImmutablePoint3(0,0,0);
-  ImmutablePoint3 pt2Org = ImmutablePoint3(0,0,0);
+  ImmutablePoint3 pt1Org = ImmutablePoint3(0, 0, 0);
+  ImmutablePoint3 pt2Org = ImmutablePoint3(0, 0, 0);
 
   bool restore = false;
 
@@ -23,6 +23,7 @@ class Brick {
     pt1Org = ImmutablePoint3(pt1.x, pt1.y, pt1.z);
     pt2Org = ImmutablePoint3(pt2.x, pt2.y, pt2.z);
   }
+
   void restoreFromOrg() {
     pt1 = ImmutablePoint3(pt1Org.x, pt1Org.y, pt1Org.z);
     pt2 = ImmutablePoint3(pt2Org.x, pt2Org.y, pt2Org.z);
@@ -30,6 +31,7 @@ class Brick {
   }
 
   String name;
+
   Brick(this.name, this.pt1, this.pt2);
 }
 
@@ -42,16 +44,17 @@ class Day22 extends Day with ProblemReader, SolutionCheck {
   static List<Brick> parseData(var data) {
     /*1,0,1~1,2,1*/
     int n = 0;
-    var res = LineSplitter()
-        .convert(data)
-        .map((e) {
-          var parts = e.split("~");
-          var pt1 = parts[0].split(",").map((e) => int.parse(e)).toList();
-          var pt2 = parts[1].split(",").map((e) => int.parse(e)).toList();
-          var brick = Brick(numberToLetters(n++), ImmutablePoint3(pt1[0], pt1[1], pt1[2]), ImmutablePoint3(pt2[0], pt2[1], pt2[2]));
-          assert(brick.pt1.z <= brick.pt2.z);
-          return brick;
-        }).toList();
+    var res = LineSplitter().convert(data).map((e) {
+      var parts = e.split("~");
+      var pt1 = parts[0].split(",").map((e) => int.parse(e)).toList();
+      var pt2 = parts[1].split(",").map((e) => int.parse(e)).toList();
+      var brick = Brick(
+          numberToLetters(n++),
+          ImmutablePoint3(pt1[0], pt1[1], pt1[2]),
+          ImmutablePoint3(pt2[0], pt2[1], pt2[2]));
+      assert(brick.pt1.z <= brick.pt2.z);
+      return brick;
+    }).toList();
     res.sort((a, b) => a.pt1.z - b.pt1.z);
     return res;
   }
@@ -66,58 +69,60 @@ class Day22 extends Day with ProblemReader, SolutionCheck {
     return true;
   }
 
+  int _settleDownBricks(List<Brick> data, Map<int, List<int>> byZMapOfBrickIndexes,
+      {var test = false,
+      var ignoreBrickIndex = -1,
+      var startBrick = 0,
+      var failFast = false,
+      var restoreOnDone = false}) {
 
-
-  int _settleDownBricks(List<Brick> data,  {var test = false, var ignoreBrick = -1, var startBrick = 0, var failFast = false, var restoreOnDone = false}) {
-
-    var byZMapOfBrickIndexes = <int, List<int>>{};
-    for (var i = 0; i < data.length; i++) {
-      var brick = data[i];
-      if (!byZMapOfBrickIndexes.containsKey(brick.pt2.z)) {
-        byZMapOfBrickIndexes[brick.pt2.z] = <int>[];
-      }
-      byZMapOfBrickIndexes[brick.pt2.z]!.add(i);
-    }
-
+    // Stores bricks top positions (pt2.z). But only for bricks that were moved.
+    // Only other bricks with the same pt1.z should move - because they are above them - touching.
     List<int> movedBrickTops = [];
-    List<int> movedBrickMaxX = [];
-    if (ignoreBrick != -1) {
-      var ignoredBrick = data[ignoreBrick];
+    late var ignoredBrick;
+    if (ignoreBrickIndex != -1) {
+      ignoredBrick = data[ignoreBrickIndex];
       movedBrickTops.add(ignoredBrick.pt2.z);
     }
+
+    // After simulation of moving bricks, we need to restore them back to original positions.
+    // Only if this is not an initial process of making all bricks falling down.
     List<int> toRestoreIndexes = [];
 
-    // Starting from the bottom most brick, move it along z down, as far as possible to the bottom, but no lower
-    // than any other brick colliding with it.
-    // Then move to the next brick, and repeat.
-    Brick testBrick = Brick('?', ImmutablePoint3(0,0,0), ImmutablePoint3(0,0,0));
+    // Starting from the bottom most brick, move it along z-axia down, as far as possible to the bottom, but no lower
+    // than any other brick colliding with it. Then move to the next brick, and repeat.
+    Brick testBrick =
+        Brick('?', ImmutablePoint3(0, 0, 0), ImmutablePoint3(0, 0, 0));
     int movedBricks = 0;
     for (var i = startBrick; i < data.length; i++) {
-      if (i == ignoreBrick)
-        continue;
-      var brick = data[i];
-      if (brick.pt1.z == 1)
-        continue;
+      if (i == ignoreBrickIndex) continue;
 
-      if (ignoreBrick != -1 && failFast) {
-        var ignoredBrick = data[ignoreBrick];
-        if (ignoredBrick.pt2.z < brick.pt1.z-1 ) {
-          break;;
+      var brick = data[i];
+      if (brick.pt1.z == 1) continue;
+
+      if (ignoreBrickIndex != -1 && failFast) {
+        if (brick.pt1.z - 1 > ignoredBrick.pt2.z) {
+          break;
         }
       }
 
       if (movedBrickTops.isNotEmpty) {
-        if (!movedBrickTops.contains(brick.pt1.z-1))
-          continue;
+        if (!movedBrickTops.contains(brick.pt1.z - 1)) continue;
       }
 
       bool wasMoved = false;
       testBrick.pt1 = ImmutablePoint3(brick.pt1.x, brick.pt1.y, brick.pt1.z);
       testBrick.pt2 = ImmutablePoint3(brick.pt2.x, brick.pt2.y, brick.pt2.z);
+
+      // Simulate falling of the testBrick brick down, one step at a time.
       while (true) {
 
-        if (ignoreBrick != -1) {
-          var ignoredBrick = data[ignoreBrick];
+        testBrick.pt1 = testBrick.pt1.offset(0, 0, -1);
+        testBrick.pt2 = testBrick.pt2.offset(0, 0, -1);
+        if (testBrick.pt1.z < 1)
+          break;
+
+        if (ignoreBrickIndex != -1) {
           if (testBrick.pt2.z < ignoredBrick.pt1.z) {
             break;
           }
@@ -125,161 +130,142 @@ class Day22 extends Day with ProblemReader, SolutionCheck {
 
         var collision = false;
 
-        //if (toRestoreIndexes.isEmpty)
-        byZMapOfBrickIndexes[testBrick.pt1.z]?.forEach((element) {
-          if (element == ignoreBrick) return;
-          if (element == i) return;
-          var otherBrick = data[element];
-          if (!_isCollision(otherBrick, testBrick))
-            return;
-          collision = true;
+        // Quickly find possible collisions by checking only bricks with the same pt1.z
+        byZMapOfBrickIndexes[testBrick.pt1.z]?.apply((indexes) {
+          for (var k = 0; k < indexes.length; ++k) {
+            var element = indexes[k];
+            if (element == ignoreBrickIndex) continue;
+            if (element == i) continue;
+            var otherBrick = data[element];
+            if (!_isCollision(otherBrick, testBrick)) continue;
+            collision = true;
+            break;
+          }
         });
 
         if (!collision) {
-          if (testBrick.pt1.z != brick.pt1.z) {
-            if (!wasMoved && movedBrickTops.isNotEmpty) {
-              movedBrickTops.add(brick.pt2.z);
-            }
-            byZMapOfBrickIndexes[testBrick.pt2.z+1]!.remove(i);
-            if (!byZMapOfBrickIndexes.containsKey(testBrick.pt2.z)) {
-              byZMapOfBrickIndexes[testBrick.pt2.z] = [i];
-            }
-            else
-              byZMapOfBrickIndexes[testBrick.pt2.z]!.add(i);
-            wasMoved = true;
-            if (failFast)
-              break;
+          // If no collision was found, then this brick can move further down.
+
+          // Update top positions of moved bricks
+          if (!wasMoved && movedBrickTops.isNotEmpty) {
+            movedBrickTops.add(brick.pt2.z);
           }
-          if (!test) {
-            brick.pt1 = ImmutablePoint3(brick.pt1.x, brick.pt1.y, testBrick.pt1.z);
-            brick.pt2 = ImmutablePoint3(brick.pt2.x, brick.pt2.y, testBrick.pt2.z);
-          }
-        }
-        else {
+
+          // Update cache by z position
+          byZMapOfBrickIndexes[testBrick.pt2.z + 1]!.remove(i);
+          byZMapOfBrickIndexes.update(
+              testBrick.pt2.z,
+                  (list) => list..add(i),
+              ifAbsent: () => [i]
+          );
+
+          wasMoved = true;
+          if (failFast) break;
+
+        } else {
           break;
         }
-        testBrick.pt1 = testBrick.pt1.offset(0, 0, -1);
-        testBrick.pt2 = testBrick.pt2.offset(0, 0, -1);
-        if (testBrick.pt1.z < 1)
-          break;
       }
 
       if (wasMoved) {
+        if (!test) {
+          // Update brick new position, +1 is because last moved caused collision so we need to go back.
+          brick.pt1 = ImmutablePoint3(brick.pt1.x, brick.pt1.y, testBrick.pt1.z + 1);
+          brick.pt2 = ImmutablePoint3(brick.pt2.x, brick.pt2.y, testBrick.pt2.z + 1);
+        }
         movedBricks++;
         toRestoreIndexes.add(i);
         brick.markToRestore();
-        if (failFast)
-          break;
+        if (failFast) break;
       }
     }
+
     if (restoreOnDone) {
-      toRestoreIndexes.forEach((element) {data[element].restoreFromOrg();});
+      toRestoreIndexes.forEach((index) {
+        var brick = data[index];
+        byZMapOfBrickIndexes[brick.pt2.z]!.remove(index);
+        brick.restoreFromOrg();
+        byZMapOfBrickIndexes.update(
+            brick.pt2.z,
+                (list) => list..add(index),
+            ifAbsent: () => [index]
+        );
+      });
     }
 
-    //print("start=${startBrick} i1=$i1, i2=$i2, i3=$i3, movedBricks=$movedBricks");
     return movedBricks;
   }
 
   void _printBricks(List<Brick> data) {
-    int highestZ = 0;
-    for (var brick in data) {
-      if (brick.pt2.z > highestZ) {
-        highestZ = brick.pt2.z;
-      }
-      if (brick.pt1.z > highestZ) {
-        highestZ = brick.pt1.z;
-      }
-    }
-    int lowestZ = highestZ;
-    for (var brick in data) {
-      if (brick.pt2.z < lowestZ) {
-        lowestZ = brick.pt2.z;
-      }
-      if (brick.pt1.z < lowestZ) {
-        lowestZ = brick.pt1.z;
-      }
-    }
-    int highestX = 0;
-    for (var brick in data) {
-      if (brick.pt2.x > highestX) {
-        highestX = brick.pt2.x;
-      }
-      if (brick.pt1.x > highestX) {
-        highestX = brick.pt1.x;
-      }
-    }
-    int lowestX = highestX;
-    for (var brick in data) {
-      if (brick.pt1.x < lowestX) {
-        lowestX = brick.pt1.x;
-      }
-      if (brick.pt2.x < lowestX) {
-        lowestX = brick.pt2.x;
-      }
-    }
+    var zValues = data.expand((b) => [b.pt1.z, b.pt2.z]);
+    var xValues = data.expand((b) => [b.pt1.x, b.pt2.x]);
+    int highestZ = zValues.reduce(max);
+    int lowestZ = zValues.reduce(min);
+    int highestX = xValues.reduce(max);
+    int lowestX = xValues.reduce(min);
 
+    print("");
     for (var z = highestZ; z >= lowestZ; z--) {
-      String line = "";
-      for (var x = lowestX; x <= highestX; x++) {
-        String name = ".";
-        for (var j = 0; j < data.length; j++) {
-          var brick = data[j];
-          if (z >= brick.pt1.z && z <= brick.pt2.z && x >= brick.pt1.x && x <= brick.pt2.x) {
-            if (name == ".")
-              name = brick.name;
-            else
-              name = "?";
-          }
-        }
-        line += "$name";
-      }
-      line += " $z";
-      print(line);
+      String line = List.generate(highestX - lowestX + 1, (x) {
+        var name = data
+            .firstWhere(
+                (b) =>
+                    z >= b.pt1.z &&
+                    z <= b.pt2.z &&
+                    x + lowestX >= b.pt1.x &&
+                    x + lowestX <= b.pt2.x,
+                orElse: () => Brick(
+                    '.', ImmutablePoint3(0, 0, 0), ImmutablePoint3(0, 0, 0)))
+            .name;
+        return name == '.' ? '.' : data.where((b) =>
+                            z >= b.pt1.z &&
+                            z <= b.pt2.z &&
+                            x + lowestX >= b.pt1.x &&
+                            x + lowestX <= b.pt2.x).length > 1 ? '?' : name;
+      }).join();
+      print("$line $z");
     }
   }
 
-/*
- x
-012
-.G. 9
-.G. 8
-... 7
-FFF 6
-..E 5 z
-D.. 4
-CCC 3
-BBB 2
-.A. 1
---- 0
-
- x
-012
-.G. 6
-.G. 5
-FFF 4
-D.E 3 z
-??? 2
-.A. 1
---- 0
- */
+  Map<int, List<int>> createByZMapOfBrickIndexes(List<Brick> data) {
+    var byZMapOfBrickIndexes = <int, List<int>>{};
+    for (var i = 0; i < data.length; i++) {
+      byZMapOfBrickIndexes.putIfAbsent(data[i].pt2.z, () => <int>[]).add(i);
+    }
+    return byZMapOfBrickIndexes;
+  }
 
   int solve(List<Brick> data, {var part2 = false}) {
-    int total = 0;
 
-    _settleDownBricks(data);
+    // Make a cache of bricks by z value
+    var byZMapOfBrickIndexes = createByZMapOfBrickIndexes(data);
+
+    // First, move bricks down.
+    //_printBricks(data);
+    _settleDownBricks(data, byZMapOfBrickIndexes);
+
+    // Resort list by z
     data.sort((a, b) => a.pt1.z - b.pt1.z);
+    byZMapOfBrickIndexes = createByZMapOfBrickIndexes(data);
 
-    if (part2)
-      data.forEach((element) {element.saveOrg();});
+    //_printBricks(data);
 
-    for (int j = 0; j < data.length; ++j) {
-      if (part2) {
-        int movedBricks = _settleDownBricks(data, ignoreBrick: j, startBrick:j, restoreOnDone: true);
-        total += movedBricks;
+    // Remember original positions
+    data.forEach((element) {
+      element.saveOrg();
+    });
+
+    int total = 0;
+    if (part2) {
+      for (int j = 0; j < data.length; ++j) {
+        total += _settleDownBricks(data, byZMapOfBrickIndexes,
+            ignoreBrickIndex: j, startBrick: j, restoreOnDone: true);
       }
-      else {
-        int movedBricks = _settleDownBricks(data, test: true, ignoreBrick: j, startBrick:j, failFast: true);
-        if (movedBricks == 0) {
+    } else {
+      for (int j = 0; j < data.length; ++j) {
+        if (0 ==
+            _settleDownBricks(data, byZMapOfBrickIndexes,
+                test: true, restoreOnDone: true, ignoreBrickIndex: j, startBrick: j, failFast: true)) {
           total++;
         }
       }
@@ -296,11 +282,13 @@ D.E 3 z
 
     var res1 = solve(data);
     print('Part1: $res1');
-    verifyResult(res1, getIntFromFile("../adventofcode_input/2023/data/day22_result.txt", 0));
+    verifyResult(res1,
+        getIntFromFile("../adventofcode_input/2023/data/day22_result.txt", 0));
 
     data = readData("../adventofcode_input/2023/data/day22.txt");
     var res2 = solve(data, part2: true);
     print('Part2: $res2');
-    verifyResult(res2, getIntFromFile("../adventofcode_input/2023/data/day22_result.txt", 1));
+    verifyResult(res2,
+        getIntFromFile("../adventofcode_input/2023/data/day22_result.txt", 1));
   }
 }

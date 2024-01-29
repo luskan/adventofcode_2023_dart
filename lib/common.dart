@@ -365,3 +365,11 @@ String numberToLetters(int number) {
   }
   return letters;
 }
+
+extension Apply<T> on T? {
+  void apply(void Function(T) action) {
+    if (this != null) {
+      action(this!);
+    }
+  }
+}
