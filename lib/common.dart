@@ -68,6 +68,18 @@ class Point implements IPoint<int> {
   }
 }
 
+class ImmutablePoint3 {
+  final int x;
+  final int y;
+  final int z;
+
+  const ImmutablePoint3(this.x, this.y, this.z);
+
+  ImmutablePoint3 offset(int i, int j, int k) {
+    return ImmutablePoint3(x + i, y + j, z + k);
+  }
+}
+
 class Point3<T extends num> {  // Constrain T to be a subtype of num
   final T x;
   final T y;
@@ -343,4 +355,13 @@ bool isCycleFound<T>(List<T> weights, FoundCycle foundCycle) {
 
   // If no cycle is found, return false
   return false;
+}
+
+String numberToLetters(int number) {
+  String letters = '';
+  while (number >= 0) {
+    letters = String.fromCharCode(65 + (number % 26)) + letters;
+    number = number ~/ 26 - 1;
+  }
+  return letters;
 }

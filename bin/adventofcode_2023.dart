@@ -21,6 +21,7 @@ import 'package:adventofcode_2023/day18.dart';
 import 'package:adventofcode_2023/day19.dart';
 import 'package:adventofcode_2023/day20.dart';
 import 'package:adventofcode_2023/day21.dart';
+import 'package:adventofcode_2023/day22.dart';
 import 'package:adventofcode_2023/day24.dart';
 
 import 'dart:developer';
@@ -30,6 +31,7 @@ void main(List<String> arguments) async {
   //await Executor().warmUp(log: true);
 
   var days = <Day>[
+    /*
     Day01(),
     Day02(),
     Day03(),
@@ -50,8 +52,9 @@ void main(List<String> arguments) async {
     Day18(),
     Day19(),
     Day20(),
-    Day21(),
-    Day24(),
+    Day21(),*/
+    Day22(),
+    //Day24(),
   ];
 
   var swTotal = Stopwatch()..start();
