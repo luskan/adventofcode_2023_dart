@@ -373,3 +373,24 @@ extension Apply<T> on T? {
     }
   }
 }
+
+int setNthBit(int number, int n) {
+  if (n < 0 || n > 63) {
+    throw ArgumentError('n must be between 0 and 63.');
+  }
+
+  int mask = 1 << n;
+  return number | mask;
+}
+
+bool getNthBit(int number, int n) {
+  if (n < 0 || n > 63) {
+    throw ArgumentError('n must be between 0 and 63.');
+  }
+
+  // Create a mask with a 1 at the n-th position
+  int mask = 1 << n;
+
+  // Use bitwise AND to isolate the n-th bit and check if it is set
+  return (number & mask) != 0;
+}
