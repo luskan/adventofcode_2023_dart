@@ -20,3 +20,4 @@ dev_dependencies:
   collection: ^1.17.0
   tuple: ^2.0.1
   vector_math: ^2.1.0
+  more: ^4.0.0

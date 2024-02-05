@@ -24,6 +24,7 @@ import 'package:adventofcode_2023/day21.dart';
 import 'package:adventofcode_2023/day22.dart';
 import 'package:adventofcode_2023/day23.dart';
 import 'package:adventofcode_2023/day24.dart';
+import 'package:adventofcode_2023/day25.dart';
 
 import 'dart:developer';
 import 'package:worker_manager/worker_manager.dart';
@@ -56,6 +57,7 @@ void main(List<String> arguments) async {
     Day22(),
     Day23(),
     Day24(),
+    Day25(),
   ];
 
   var swTotal = Stopwatch()..start();
